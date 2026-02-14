@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { getFintuttoSDK } from '@/lib/fintutto-sdk';
 
 /**
  * Sovendus Integration Component
@@ -10,8 +10,12 @@ import { base44 } from '@/api/base44Client';
  *
  * Revenue: CPC/CPL commission per user interaction with voucher offers.
  *
+ * Postback-URL (im Sovendus Dashboard hinterlegen):
+ *   https://aaefocdqgdgexkcrjhks.supabase.co/functions/v1/sovendusPostback
+ *
  * Usage:
  *   <SovendusIntegration
+ *     appId="mieterapp"
  *     trafficSourceNumber="YOUR_TRAFFIC_SOURCE"
  *     trafficMediumNumber="YOUR_TRAFFIC_MEDIUM"
  *     userEmail={user.email}
@@ -26,9 +30,11 @@ const SOVENDUS_CONFIG = {
   trafficSourceNumber: import.meta.env.VITE_SOVENDUS_TRAFFIC_SOURCE || 'FINTUTTO_SOURCE',
   trafficMediumNumber: import.meta.env.VITE_SOVENDUS_TRAFFIC_MEDIUM || 'FINTUTTO_MEDIUM',
   iframeContainerId: 'sovendus-integration-container',
+  postbackUrl: 'https://aaefocdqgdgexkcrjhks.supabase.co/functions/v1/sovendusPostback',
 };
 
 export default function SovendusIntegration({
+  appId = 'mieterapp',
   trafficSourceNumber = SOVENDUS_CONFIG.trafficSourceNumber,
   trafficMediumNumber = SOVENDUS_CONFIG.trafficMediumNumber,
   userEmail = '',
@@ -46,6 +52,7 @@ export default function SovendusIntegration({
   const containerRef = useRef(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasConsent, setHasConsent] = useState(false);
+  const sdkRef = useRef(getFintuttoSDK(appId));
 
   // Check for existing consent
   useEffect(() => {
@@ -90,11 +97,10 @@ export default function SovendusIntegration({
     script.onload = () => setIsLoaded(true);
     document.body.appendChild(script);
 
-    // Track impression
+    // Track impression via Fintutto SDK (-> Supabase Edge Function)
     trackSovendusEvent('impression', { trigger, orderId, orderValue });
 
     return () => {
-      // Cleanup
       if (document.body.contains(script)) {
         document.body.removeChild(script);
       }
@@ -105,10 +111,13 @@ export default function SovendusIntegration({
 
   const trackSovendusEvent = async (eventType, data = {}) => {
     try {
-      await base44.functions.invoke('sovendusTracking', {
-        action: 'track_event',
-        event_type: eventType,
-        ...data,
+      await sdkRef.current.trackSovendusEvent({
+        eventType,
+        trigger: data.trigger || trigger,
+        orderId: data.orderId || orderId,
+        orderValue: data.orderValue || orderValue,
+        partnerName: data.partnerName,
+        voucherCode: data.voucherCode,
       });
     } catch (e) {
       console.error('Sovendus tracking error:', e);
@@ -132,15 +141,15 @@ export default function SovendusIntegration({
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 max-w-lg mx-auto">
         <div className="flex items-start gap-4">
           <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center flex-shrink-0">
-            <span className="text-2xl">🎁</span>
+            <span className="text-2xl" role="img" aria-label="Geschenk">&#x1F381;</span>
           </div>
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-white text-lg mb-1">
-              Exklusive Vergünstigungen
+              Exklusive Verguenstigungen
             </h3>
             <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-              Erhalte attraktive Gutscheine und Rabatte von ausgewählten Partnern.
-              Dafür werden anonymisierte Daten an unseren Partner Sovendus übermittelt.
+              Erhalte attraktive Gutscheine und Rabatte von ausgewaehlten Partnern.
+              Dafuer werden anonymisierte Daten an unseren Partner Sovendus uebermittelt.
               <a href="/Datenschutz" className="text-blue-600 hover:underline ml-1">Mehr erfahren</a>
             </p>
             <div className="flex gap-3">
@@ -148,7 +157,7 @@ export default function SovendusIntegration({
                 onClick={handleConsent}
                 className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors"
               >
-                Vergünstigungen anzeigen
+                Verguenstigungen anzeigen
               </button>
               <button
                 onClick={handleDecline}
@@ -173,7 +182,7 @@ export default function SovendusIntegration({
       {!isLoaded && (
         <div className="flex items-center justify-center py-8">
           <div className="w-6 h-6 border-2 border-gray-200 border-t-green-600 rounded-full animate-spin" />
-          <span className="ml-3 text-gray-500 text-sm">Vergünstigungen werden geladen...</span>
+          <span className="ml-3 text-gray-500 text-sm">Verguenstigungen werden geladen...</span>
         </div>
       )}
     </div>

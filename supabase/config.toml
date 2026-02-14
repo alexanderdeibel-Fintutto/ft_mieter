@@ -1,0 +1,61 @@
+[project]
+id = "aaefocdqgdgexkcrjhks"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
+
+[auth]
+enabled = true
+site_url = "https://app.mieterapp.de"
+additional_redirect_urls = [
+  "https://app.vermietify.de",
+  "https://app.hausmeisterpro.de",
+  "https://app.ablesung.fintutto.de",
+  "https://portal.fintutto.de",
+  "http://localhost:5173",
+]
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = false
+
+[functions.billing]
+verify_jwt = true
+
+[functions.setupStripeBundles]
+verify_jwt = true
+
+[functions.affiliatePartnerEngine]
+verify_jwt = false
+
+[functions.sovendusTracking]
+verify_jwt = false
+
+[functions.sovendusPostback]
+verify_jwt = false
+
+[functions.abTestEngine]
+verify_jwt = true
+
+[functions.ecosystemBundlePricing]
+verify_jwt = false
+
+[functions.ecosystemCrossSell]
+verify_jwt = false
+
+[functions.setupDatabase]
+verify_jwt = false

@@ -80,6 +80,7 @@ export default function BillingSuccess() {
             {/* Sovendus Post-Checkout Vouchers */}
             <div className="mt-8 pt-6 border-t border-gray-100">
               <SovendusIntegration
+                appId="mieterapp"
                 trigger="checkout_success"
                 orderId={searchParams.get('session_id') || ''}
                 orderValue={plan?.price || 0}

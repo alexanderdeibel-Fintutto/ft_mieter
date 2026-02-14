@@ -2,9 +2,10 @@ import React, { useState, useCallback } from 'react';
 import {
   Database, CreditCard, Users, FlaskConical, CheckCircle2,
   XCircle, Loader2, Play, RotateCcw, ChevronDown, ChevronRight,
-  Copy, ExternalLink, Shield, Zap, Package, TestTube2
+  Copy, ExternalLink, Shield, Zap, Package, TestTube2, Terminal, Globe
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { FintuttoSDK } from '@/lib/fintutto-sdk';
 
 const SETUP_STEPS = [
   {
@@ -139,16 +140,25 @@ export default function AdminFullSetup() {
     setStepResults(prev => ({ ...prev, [step.id]: null }));
 
     try {
-      const response = await base44.functions.invoke(step.function, {
-        action: step.action,
-      });
+      // Try Fintutto SDK first (Supabase Edge Functions), fall back to base44
+      let result;
+      try {
+        const sdk = new FintuttoSDK({ appId: 'mieterapp' });
+        result = await sdk._invoke(step.function, { action: step.action });
+      } catch {
+        // Fallback to base44
+        const response = await base44.functions.invoke(step.function, {
+          action: step.action,
+        });
+        result = response.data;
+      }
 
-      if (response.data?.success || response.data?.status === 'ok') {
+      if (result?.success || result?.status === 'ok') {
         setStepStatuses(prev => ({ ...prev, [step.id]: 'success' }));
-        setStepResults(prev => ({ ...prev, [step.id]: response.data }));
+        setStepResults(prev => ({ ...prev, [step.id]: result }));
       } else {
         setStepStatuses(prev => ({ ...prev, [step.id]: 'error' }));
-        setStepResults(prev => ({ ...prev, [step.id]: response.data?.error || response.data || 'Unbekannter Fehler' }));
+        setStepResults(prev => ({ ...prev, [step.id]: result?.error || result || 'Unbekannter Fehler' }));
       }
     } catch (err) {
       setStepStatuses(prev => ({ ...prev, [step.id]: 'error' }));
@@ -281,6 +291,83 @@ export default function AdminFullSetup() {
             >
               <ExternalLink className="w-3 h-3" /> Edge Function Settings oeffnen
             </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Edge Functions Deployment */}
+      <div className="bg-gray-900 dark:bg-gray-950 rounded-xl p-5 text-white">
+        <div className="flex items-center gap-3 mb-3">
+          <Terminal className="w-5 h-5 text-green-400" />
+          <h3 className="font-semibold">Edge Functions Deployment</h3>
+        </div>
+        <div className="font-mono text-xs space-y-1 text-green-300 bg-black/30 rounded-lg p-4 overflow-x-auto">
+          <p className="text-gray-500"># 1. Supabase CLI installieren & einloggen</p>
+          <p>npm install -g supabase</p>
+          <p>supabase login</p>
+          <p>supabase link --project-ref aaefocdqgdgexkcrjhks</p>
+          <p className="text-gray-500 mt-2"># 2. Secrets setzen</p>
+          <p>supabase secrets set STRIPE_SECRET_KEY=sk_live_...</p>
+          <p>supabase secrets set SOVENDUS_WEBHOOK_SECRET=...</p>
+          <p className="text-gray-500 mt-2"># 3. Alle Functions deployen</p>
+          <p>chmod +x supabase/deploy.sh && ./supabase/deploy.sh</p>
+          <p className="text-gray-500 mt-2"># Oder einzeln:</p>
+          <p>supabase functions deploy billing</p>
+          <p>supabase functions deploy setupStripeBundles</p>
+          <p>supabase functions deploy affiliatePartnerEngine</p>
+          <p>supabase functions deploy sovendusTracking</p>
+          <p>supabase functions deploy sovendusPostback</p>
+          <p>supabase functions deploy abTestEngine</p>
+          <p>supabase functions deploy ecosystemBundlePricing</p>
+          <p>supabase functions deploy ecosystemCrossSell</p>
+          <p>supabase functions deploy setupDatabase</p>
+        </div>
+      </div>
+
+      {/* Sovendus Postback URL */}
+      <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
+        <div className="flex items-start gap-3">
+          <Globe className="w-5 h-5 text-green-600 mt-0.5" />
+          <div>
+            <p className="font-medium text-green-800 dark:text-green-200 text-sm">
+              Sovendus Postback-URL
+            </p>
+            <p className="text-green-700 dark:text-green-300 text-xs mt-1">
+              Diese URL im Sovendus Partner-Dashboard als Conversion-Postback hinterlegen:
+            </p>
+            <code className="block mt-2 bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200 px-3 py-2 rounded-lg text-xs font-mono break-all">
+              https://aaefocdqgdgexkcrjhks.supabase.co/functions/v1/sovendusPostback
+            </code>
+          </div>
+        </div>
+      </div>
+
+      {/* Multi-App Integration Info */}
+      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+        <div className="flex items-start gap-3">
+          <Package className="w-5 h-5 text-blue-600 mt-0.5" />
+          <div>
+            <p className="font-medium text-blue-800 dark:text-blue-200 text-sm">
+              Integration in alle 5 Apps
+            </p>
+            <p className="text-blue-700 dark:text-blue-300 text-xs mt-1">
+              Das Shared SDK (<code className="bg-blue-100 dark:bg-blue-800 px-1 rounded font-mono">src/lib/fintutto-sdk.js</code>) und die
+              React Hooks (<code className="bg-blue-100 dark:bg-blue-800 px-1 rounded font-mono">src/lib/useFintutto.js</code>) koennen in jede App kopiert werden.
+              Die App-spezifische Konfiguration ist in <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded font-mono">src/lib/app-configs.js</code>.
+            </p>
+            <div className="mt-3 grid grid-cols-5 gap-2">
+              {[
+                { name: 'MieterApp', icon: 'home', color: 'blue' },
+                { name: 'Vermietify', icon: 'building', color: 'purple' },
+                { name: 'HausmeisterPro', icon: 'wrench', color: 'amber' },
+                { name: 'Ablesung', icon: 'chart', color: 'green' },
+                { name: 'Portal', icon: 'globe', color: 'indigo' },
+              ].map((app) => (
+                <div key={app.name} className={`bg-white dark:bg-gray-800 rounded-lg p-2 text-center border border-${app.color}-200 dark:border-${app.color}-800`}>
+                  <p className="text-xs font-medium text-gray-700 dark:text-gray-300">{app.name}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 import { activatePlan, PLANS } from '../components/services/stripe';
+import SovendusIntegration from '../components/affiliate/SovendusIntegration';
 
 export default function BillingSuccess() {
   const navigate = useNavigate();
@@ -75,6 +76,15 @@ export default function BillingSuccess() {
             >
               Jetzt starten
             </button>
+
+            {/* Sovendus Post-Checkout Vouchers */}
+            <div className="mt-8 pt-6 border-t border-gray-100">
+              <SovendusIntegration
+                trigger="checkout_success"
+                orderId={searchParams.get('session_id') || ''}
+                orderValue={plan?.price || 0}
+              />
+            </div>
           </>
         )}
         

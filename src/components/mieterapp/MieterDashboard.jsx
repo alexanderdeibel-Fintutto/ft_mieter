@@ -30,6 +30,9 @@ import InteractiveWalkthrough from '@/components/onboarding/InteractiveWalkthrou
 import StreakCounter from '@/components/gamification/StreakCounter';
 import { TriggerConfetti } from '@/components/layout/EnhancedConfetti';
 import FloatingActionButton from '@/components/mobile/FloatingActionButton';
+import AffiliateDashboardWidget from '@/components/affiliate/AffiliateDashboardWidget';
+import EcosystemCrossSellWidget from '@/components/crosssell/EcosystemCrossSellWidget';
+import { VerivoxMultiWidget } from '@/components/affiliate/VerivoxWidget';
 
 export default function MieterDashboard() {
   const { addToast } = useToast();
@@ -323,6 +326,15 @@ export default function MieterDashboard() {
               </Card>
             </TabsContent>
           </Tabs>
+        </div>
+
+        {/* Vergünstigungen & Ecosystem Widgets */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <AffiliateDashboardWidget userRole="mieter" />
+          <div className="space-y-4">
+            <EcosystemCrossSellWidget currentApp="mieterapp" userRole="mieter" />
+            <VerivoxMultiWidget context="dashboard" />
+          </div>
         </div>
       </div>
 

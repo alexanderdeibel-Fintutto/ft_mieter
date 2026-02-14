@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  Home, MessageSquare, Users, Wrench, Euro, Settings, 
-  Pin, X, ChevronLeft, ChevronRight, Sparkles, Bot
+import {
+  Home, MessageSquare, Users, Wrench, Euro, Settings,
+  Pin, X, ChevronLeft, ChevronRight, Sparkles, Bot, Gift, Crown, Building2, DollarSign
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -19,6 +19,10 @@ const ALL_PAGES = [
   { id: 'MieterFinances', label: 'Finanzen', icon: Euro, path: 'MieterFinances' },
   { id: 'MieterMessages', label: 'Nachrichten', icon: MessageSquare, path: 'MieterMessages' },
   { id: 'AISettings', label: 'KI-Einstellungen', icon: Bot, path: 'AISettings' },
+  { id: 'AffiliatePartnerOffers', label: 'Vergünstigungen', icon: Gift, path: 'AffiliatePartnerOffers' },
+  { id: 'EcosystemPricing', label: 'Ecosystem Bundles', icon: Crown, path: 'EcosystemPricing' },
+  { id: 'AdminTransactionRevenue', label: 'Revenue Dashboard', icon: DollarSign, path: 'AdminTransactionRevenue' },
+  { id: 'AdminWhiteLabel', label: 'White-Label B2B', icon: Building2, path: 'AdminWhiteLabel' },
   { id: 'Settings', label: 'Einstellungen', icon: Settings, path: 'Settings' },
   { id: 'NavigationHub', label: 'Navigation Hub', icon: Sparkles, path: 'NavigationHub' },
 ];

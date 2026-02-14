@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import {
   Home, MessageSquare, FileText, Wrench, Zap, Settings, LogOut,
-  ChevronRight, Menu, X, DollarSign, AlertCircle, Bell
+  ChevronRight, Menu, X, DollarSign, AlertCircle, Bell, Gift
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +17,7 @@ const MIETER_MENU = [
   { icon: Zap, label: 'Zähler', page: 'MieterMeters', badge: null },
   { icon: FileText, label: 'Dokumente', page: 'Dokumente', badge: null },
   { icon: MessageSquare, label: 'Mietrecht-Chat', page: 'MietrechtChat', badge: 'premium' },
+  { icon: Gift, label: 'Vergünstigungen', page: 'AffiliatePartnerOffers', badge: null },
   { icon: Bell, label: 'Benachrichtigungen', page: 'Notifications', badge: null },
 ];
 

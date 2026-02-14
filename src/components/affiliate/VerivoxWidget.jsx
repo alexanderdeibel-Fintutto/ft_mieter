@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Zap, TrendingDown, ArrowRight, X, Loader2, Lightbulb, Flame, Droplets } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { useABTest } from './useABTest';
 
 /**
  * Enhanced Verivox Affiliate Widget
@@ -52,9 +53,17 @@ export default function VerivoxWidget({
 }) {
   const [loading, setLoading] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const { variant: bannerStyle, trackEvent } = useABTest('verivox_banner_style');
 
   const cat = CATEGORIES[category] || CATEGORIES.strom;
   const Icon = cat.icon;
+
+  // Track impression on mount
+  useEffect(() => {
+    if (bannerStyle) {
+      trackEvent('impression', { category: cat.id, variant: variant });
+    }
+  }, [bannerStyle, cat.id]);
 
   const handleClick = async () => {
     setLoading(true);
@@ -76,6 +85,8 @@ export default function VerivoxWidget({
           context: `verivox_${cat.id}`,
         }).catch(() => {});
 
+        // Track A/B test click
+        trackEvent('click', { category: cat.id });
         window.open(response.data.affiliate_link, '_blank', 'noopener,noreferrer');
       }
     } catch (err) {

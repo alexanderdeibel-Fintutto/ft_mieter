@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Gift, ArrowRight, Zap, Tag, ExternalLink, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
+import { useABTest } from './useABTest';
 
 /**
  * Compact affiliate widget for the main dashboard.
@@ -11,10 +12,18 @@ export default function AffiliateDashboardWidget({ userRole = 'mieter', classNam
   const navigate = useNavigate();
   const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { variant: placement, trackEvent } = useABTest('affiliate_widget_placement');
 
   useEffect(() => {
     loadTopOffers();
   }, [userRole]);
+
+  // Track impression when widget becomes visible
+  useEffect(() => {
+    if (placement && offers.length > 0) {
+      trackEvent('impression', { offer_count: offers.length });
+    }
+  }, [placement, offers.length]);
 
   const loadTopOffers = async () => {
     try {
@@ -44,6 +53,8 @@ export default function AffiliateDashboardWidget({ userRole = 'mieter', classNam
         source_page: 'dashboard_widget',
       });
     } catch (e) {}
+    // Track A/B test click
+    trackEvent('click', { partner_id: offer.id, partner_name: offer.name });
     window.open(offer.affiliate_url, '_blank', 'noopener,noreferrer');
   };
 

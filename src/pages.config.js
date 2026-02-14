@@ -48,6 +48,7 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import AdminABTestResults from './pages/AdminABTestResults';
+import AdminFullSetup from './pages/AdminFullSetup';
 import AffiliatePartnerOffers from './pages/AffiliatePartnerOffers';
 import AdminTransactionRevenue from './pages/AdminTransactionRevenue';
 import AdminWhiteLabel from './pages/AdminWhiteLabel';
@@ -250,6 +251,7 @@ import __Layout from './Layout.jsx';
 
 export const PAGES = {
     "AdminABTestResults": AdminABTestResults,
+    "AdminFullSetup": AdminFullSetup,
     "AffiliatePartnerOffers": AffiliatePartnerOffers,
     "AdminTransactionRevenue": AdminTransactionRevenue,
     "AdminWhiteLabel": AdminWhiteLabel,

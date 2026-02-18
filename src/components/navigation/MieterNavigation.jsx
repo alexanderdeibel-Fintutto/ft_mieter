@@ -3,27 +3,28 @@ import { useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import {
   Home, MessageSquare, FileText, Wrench, Zap, Settings, LogOut,
-  ChevronRight, Menu, X, DollarSign, AlertCircle, Bell
+  ChevronRight, Menu, X, DollarSign, AlertCircle, Bell, Gift
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { base44 } from '@/api/base44Client';
 
-const MIETER_MENU = [
-  { icon: Home, label: 'Startseite', page: 'MieterHome', badge: null },
-  { icon: DollarSign, label: 'Finanzen', page: 'MieterFinances', badge: null },
-  { icon: MessageSquare, label: 'Nachrichten', page: 'MieterMessages', badge: 'messages', count: unreadCount },
-  { icon: AlertCircle, label: 'Mängel & Reparaturen', page: 'MieterRepairs', badge: null },
-  { icon: Zap, label: 'Zähler', page: 'MieterMeters', badge: null },
-  { icon: FileText, label: 'Dokumente', page: 'Dokumente', badge: null },
-  { icon: MessageSquare, label: 'Mietrecht-Chat', page: 'MietrechtChat', badge: 'premium' },
-  { icon: Bell, label: 'Benachrichtigungen', page: 'Notifications', badge: null },
-];
-
 export default function MieterNavigation({ isCollapsed, onToggleCollapse }) {
   const location = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+
+  const MIETER_MENU = [
+    { icon: Home, label: 'Startseite', page: 'MieterHome', badge: null },
+    { icon: DollarSign, label: 'Finanzen', page: 'MieterFinances', badge: null },
+    { icon: MessageSquare, label: 'Nachrichten', page: 'MieterMessages', badge: 'messages', count: unreadCount },
+    { icon: AlertCircle, label: 'Mängel & Reparaturen', page: 'MieterRepairs', badge: null },
+    { icon: Zap, label: 'Zähler', page: 'MieterMeters', badge: null },
+    { icon: FileText, label: 'Dokumente', page: 'Dokumente', badge: null },
+    { icon: MessageSquare, label: 'Mietrecht-Chat', page: 'MietrechtChat', badge: 'premium' },
+    { icon: Gift, label: 'Vergünstigungen', page: 'AffiliatePartnerOffers', badge: null },
+    { icon: Bell, label: 'Benachrichtigungen', page: 'Notifications', badge: null },
+  ];
 
   useEffect(() => {
     // Load unread notification count
